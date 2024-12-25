@@ -26,6 +26,7 @@ func Parse(input string) (string, string) {
 
 type Task struct {
   Content string `json:"content"`
+  ProjectId string `json:"project_id"`
 }
 
 
@@ -39,7 +40,18 @@ var taskCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
     client := &http.Client{}
 
-    j := &Task{Content: args[0]}
+    content, pname := Parse(args[0])
+
+    var project Project
+    for _, p := range ListProjects() {
+      if p.Name == pname {
+        project = p;
+        break
+      }
+
+    }
+
+    j := &Task{Content: content, ProjectId: project.Id}
 
     payload, err := json.Marshal(j)
     log.Print(string(payload))
