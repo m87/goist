@@ -4,7 +4,11 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -20,6 +24,11 @@ func Parse(input string) (string, string) {
   return content, project
 }
 
+type Task struct {
+  Content string `json:"content"`
+}
+
+
 // taskCmd represents the task command
 var taskCmd = &cobra.Command{
 	Use:   "task",
@@ -28,9 +37,37 @@ var taskCmd = &cobra.Command{
   goist create task "new task #porject @label"
   goist create task "new task" -p project -l label`,
 	Run: func(cmd *cobra.Command, args []string) {
+    client := &http.Client{}
+
+    j := &Task{Content: args[0]}
+
+    payload, err := json.Marshal(j)
+    log.Print(string(payload))
+    if err != nil {
+      log.Fatal("Unable to prepare request")
+    }
+
+    req, err := http.NewRequest("POST", "https://api.todoist.com/rest/v2/tasks", bytes.NewBuffer(payload))
+
+    log.Print(req)
+
+    if err != nil {
+      log.Fatal("Unable to create new task request")
+    }
+
+    req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.Get("token")))
+    req.Header.Add("Content-Type", "application/json")
+
+    resp, err := client.Do(req)
+    
+    if resp != nil {
+      log.Fatal(resp)
+    }
+
+    if err != nil {
+      log.Fatal("Unable to create new task")
+    }
 		fmt.Println("task called")
-    fmt.Println(Parse(args[0]))
-    fmt.Println(viper.Get("token"))
 	},
 }
 

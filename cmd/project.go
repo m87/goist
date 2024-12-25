@@ -4,14 +4,22 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
-  "log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+
+type Project struct {
+  Name string 
+  Id string
+}
+
 
 // projectCmd represents the project command
 var projectListCmd = &cobra.Command{
@@ -36,12 +44,17 @@ to quickly create a Cobra application.`,
     resp, err := client.Do(req)
 
     if err != nil {
-      fmt.Errorf("Projects list request failed")
+      log.Fatal("Projects list request failed")
     }
 
     body, err := io.ReadAll(resp.Body)
-    fmt.Printf("%s", string(body[:]))
+    var projects []Project
 
+    json.Unmarshal(body, &projects)
+
+    for _, project := range projects {
+      fmt.Printf("%s(%s)\n", project.Name, project.Id)
+    }
 
 	},
 }
