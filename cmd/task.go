@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/m87/goist/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,12 +39,21 @@ var taskCmd = &cobra.Command{
   goist create task "new task #porject @label"
   goist create task "new task" -p project -l label`,
 	Run: func(cmd *cobra.Command, args []string) {
-    client := &http.Client{}
+    client2 := &http.Client{}
 
     content, pname := Parse(args[0])
 
-    var project Project
-    for _, p := range ListProjects() {
+    var project client.Project
+    cli, _ := cmd.Context().Value(Client).(client.Client)
+
+    projects, err := cli.ListProjects()
+
+    if err != nil {
+      log.Fatal("Unable to list projects") 
+    }
+    
+
+    for _, p := range projects {
       if p.Name == pname {
         project = p;
         break
@@ -70,7 +80,7 @@ var taskCmd = &cobra.Command{
     req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.Get("token")))
     req.Header.Add("Content-Type", "application/json")
 
-    resp, err := client.Do(req)
+    resp, err := client2.Do(req)
     
     if resp != nil {
       log.Fatal(resp)
