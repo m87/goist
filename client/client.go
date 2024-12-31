@@ -30,6 +30,7 @@ type Task struct {
   Content string `json:"content"`
   ProjectId string `json:"project_id"`
   ProjectName string `json:"project_name"`
+  Labels []string `json:"labels"`
 }
 
 type Client interface {

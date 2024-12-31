@@ -17,17 +17,24 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Parse(input string) (string, string) {
-  re := regexp.MustCompile(`#\w+?($|\s+)`)
-  project := strings.TrimPrefix(strings.TrimSpace(re.FindString(input)), "#")
-  content := strings.TrimSpace(re.ReplaceAllString(input, ""))
+func Parse(input string) (string, string, []string) {
+  projectsRegExp := regexp.MustCompile(`#\w+?($|\s+)`)
+  labelsRegExp := regexp.MustCompile(`@\w+?($|\s+)`)
+  project := strings.TrimPrefix(strings.TrimSpace(projectsRegExp.FindString(input)), "#")
+  labels := labelsRegExp.FindAllString(input, 1000)
+
+  // TODO remove @
   
-  return content, project
+  content := strings.TrimSpace(projectsRegExp.ReplaceAllString(input, ""))
+  content = strings.TrimSpace(labelsRegExp.ReplaceAllString(content, ""))
+  
+  return content, project, labels
 }
 
 type Task struct {
   Content string `json:"content"`
   ProjectId string `json:"project_id"`
+  Labels []string `json:"labels"`
 }
 
 
@@ -41,7 +48,7 @@ var taskCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
     client2 := &http.Client{}
 
-    content, pname := Parse(args[0])
+    content, pname, labels := Parse(args[0])
 
     var project client.Project
     cli, _ := cmd.Context().Value(Client).(client.Client)
@@ -61,7 +68,7 @@ var taskCmd = &cobra.Command{
 
     }
 
-    j := &Task{Content: content, ProjectId: project.Id}
+    j := &Task{Content: content, ProjectId: project.Id, Labels: labels}
 
     payload, err := json.Marshal(j)
     log.Print(string(payload))
