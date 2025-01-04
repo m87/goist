@@ -2,13 +2,12 @@ package cmd_test
 
 import (
 	"testing"
-
 	"github.com/m87/goist/cmd"
 )
 
 
 func TestParseProjectName(t *testing.T) {
-  content, project, labels := cmd.Parse("test #project")
+  content, project, _ := cmd.Parse("test #project")
 
   if content != "test" {
     t.Fatal("content", content)
@@ -19,7 +18,7 @@ func TestParseProjectName(t *testing.T) {
   }
 
 
-  content, project, labels = cmd.Parse("test #project test")
+  content, project, _ = cmd.Parse("test #project test")
 
   if content != "test test" {
     t.Fatal("content", content)
@@ -29,9 +28,6 @@ func TestParseProjectName(t *testing.T) {
     t.Fatal("project", project)
   }
 
-  if labels == nil {
-
-  }
 }
 
 
@@ -51,7 +47,7 @@ func TestParseLabel(t *testing.T) {
     t.Fatal("labels")
   }
 
-  content, project, labels = cmd.Parse("test @label #project test")
+  content, project, labels = cmd.Parse("test @label #project test @label2")
 
   if content != "test test" {
     t.Fatal("content", content)
@@ -59,6 +55,10 @@ func TestParseLabel(t *testing.T) {
 
   if project != "project" {
     t.Fatal("project", project)
+  }
+
+  if len(labels) != 2 || labels[0] != "label" || labels[1] != "label2" {
+    t.Fatal("labels", labels)
   }
 }
 

@@ -23,7 +23,9 @@ func Parse(input string) (string, string, []string) {
   project := strings.TrimPrefix(strings.TrimSpace(projectsRegExp.FindString(input)), "#")
   labels := labelsRegExp.FindAllString(input, 1000)
 
-  // TODO remove @
+  for i, v := range labels {
+    labels[i] = strings.TrimPrefix(strings.TrimSpace(v), "@")
+  }
   
   content := strings.TrimSpace(projectsRegExp.ReplaceAllString(input, ""))
   content = strings.TrimSpace(labelsRegExp.ReplaceAllString(content, ""))
