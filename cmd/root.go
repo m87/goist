@@ -28,6 +28,7 @@ import (
 	"os"
 
 	"github.com/m87/goist/client"
+	tui "github.com/m87/goist/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -50,12 +51,14 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
+  Run: func(cmd *cobra.Command, args []string) { 
+    tui.Run()
+  },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-fmt.Println("list called")
 
 initConfig()
     log.Print(viper.Get("token"))
