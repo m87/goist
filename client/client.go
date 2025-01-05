@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+  "github.com/m87/goist/model"
 
 )
 
@@ -21,11 +22,6 @@ func apiV2(endpoint string) string {
   return "https://api.todoist.com/rest/v2" + endpoint
 }
 
-type Project struct {
-  Id string `json:"id"`
-  Name string `json:"name"`
-}
-
 type Task struct {
   Content string `json:"content"`
   ProjectId string `json:"project_id"`
@@ -34,7 +30,7 @@ type Task struct {
 }
 
 type Client interface {
-  ListProjects() ([]Project, error)
+  ListProjects() ([]model.Project, error)
   CreateTask(task Task)
 }
 
@@ -59,7 +55,7 @@ func (t TodoistClient) appendHeaders(req *http.Request) {
   req.Header.Add("Content-Type", "application/json")
 }
 
-func (t TodoistClient) ListProjects() ([]Project, error) {
+func (t TodoistClient) ListProjects() ([]model.Project, error) {
     req, err := http.NewRequest("GET", apiV2(projectsApi), nil)
 
     if err != nil {
@@ -77,7 +73,7 @@ func (t TodoistClient) ListProjects() ([]Project, error) {
     }
 
     body, err := io.ReadAll(resp.Body)
-    var projects []Project
+    var projects []model.Project
 
     json.Unmarshal(body, &projects)
 

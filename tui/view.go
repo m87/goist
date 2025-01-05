@@ -7,12 +7,27 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type Context int
+
+const (
+  PROJECTS Context = iota
+  TASKS
+  
+)
+
 
 type MainModel struct { 
+  context Context
+
+  projectsModel ProjectsViewModel
+  tasksModel TasksViewModel
 }
 
 func initModel() MainModel {
-  return MainModel{}
+  return MainModel{
+    projectsModel: ProjectsViewModel{},
+    tasksModel: TasksViewModel{},
+  }
 }
 
 func (m MainModel) Init() tea.Cmd {
@@ -20,6 +35,14 @@ func (m MainModel) Init() tea.Cmd {
 }
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+  switch m.context {
+  case PROJECTS:
+    subModel, cmd := m.projectsModel.Update(msg)
+    m.projectsModel = subModel.(ProjectsViewModel)
+    if cmd != nil {
+      return m, cmd
+    }
+  }
 
   switch msg := msg.(type) {
     case tea.KeyMsg:
@@ -31,7 +54,6 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
   return m, nil
 } 
-
 
 func (m MainModel) View() string {
   return "stub"
