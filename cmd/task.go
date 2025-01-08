@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/m87/goist/client"
+	"github.com/m87/goist/model"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -52,7 +53,7 @@ var taskCmd = &cobra.Command{
 
     content, pname, labels := Parse(args[0])
 
-    var project client.Project
+    var project model.Project
     cli, _ := cmd.Context().Value(Client).(client.Client)
 
     projects, err := cli.ListProjects()
