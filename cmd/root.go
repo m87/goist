@@ -23,7 +23,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -52,7 +51,8 @@ to quickly create a Cobra application.`,
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
   Run: func(cmd *cobra.Command, args []string) { 
-    tui.Run()
+    cli, _ := cmd.Context().Value(Client).(client.Client)
+    tui.Run(cli)
   },
 }
 
@@ -61,7 +61,6 @@ to quickly create a Cobra application.`,
 func Execute() {
 
 initConfig()
-    log.Print(viper.Get("token"))
     client, err := client.NewTodoistClient(viper.GetString("token"))
 
     if err != nil {
@@ -107,6 +106,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+    //fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }

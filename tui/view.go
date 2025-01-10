@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/m87/goist/client"
 )
 
 type Context int
@@ -18,15 +19,22 @@ const (
 
 type MainModel struct { 
   context Context
+  client client.Client
 
   projectsModel ProjectsViewModel
-  tasksModel TasksViewModel
+  tasksModel TasksViewModel  
 }
 
-func initModel() MainModel {
+func initModel(client client.Client) MainModel {
+  projects, _ := client.ListProjects()
+
   return MainModel{
-    projectsModel: ProjectsViewModel{},
+    projectsModel: ProjectsViewModel{
+      client: client,
+      projects: projects,
+    },
     tasksModel: TasksViewModel{},
+    client: client,
   }
 }
 
@@ -56,12 +64,12 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 } 
 
 func (m MainModel) View() string {
-  return "stub"
+  return m.projectsModel.View()
 }
 
 
-func Run() {
-  p := tea.NewProgram(initModel())
+func Run(client client.Client) {
+  p := tea.NewProgram(initModel(client))
 
   if _, err := p.Run(); err != nil {
     log.Fatal("erorr", err)

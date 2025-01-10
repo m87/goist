@@ -77,8 +77,6 @@ func (t TodoistClient) ListProjects() ([]model.Project, error) {
 
     json.Unmarshal(body, &projects)
 
-    log.Print(resp)
-
     return projects, nil
 }
 
