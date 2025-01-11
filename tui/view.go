@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+  lipgloss "github.com/charmbracelet/lipgloss"
 	"github.com/m87/goist/client"
 )
 
@@ -64,7 +65,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 } 
 
 func (m MainModel) View() string {
-  return m.projectsModel.View()
+  return lipgloss.JoinHorizontal(lipgloss.Top, m.projectsModel.View(), m.tasksModel.View())
 }
 
 
